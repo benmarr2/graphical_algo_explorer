@@ -3,13 +3,17 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
+#define ARRAY_SIZE 50
+
 int main()
 {
-    // Initialization
-    //---------------------------------------------------------------------------------------
+    int array[ARRAY_SIZE];
+
+    for (int i = 0; i < ARRAY_SIZE; i++) 
+    {
+        array[i] = GetRandomValue(10, 450);  
+    }
+
     const int screenWidth = 800;
     const int screenHeight = 600;
     
@@ -27,13 +31,9 @@ int main()
     bool exitWindow = false;
     
     SetTargetFPS(60);
-    //--------------------------------------------------------------------------------------
 
-    // Main game loop
     while (!exitWindow && !WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
-        //----------------------------------------------------------------------------------
         mousePosition = GetMousePosition();
         
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !dragWindow)
@@ -54,26 +54,30 @@ int main()
             
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) dragWindow = false;
         }
-        //----------------------------------------------------------------------------------
 
-        // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
+        for (int i = 0; i < ARRAY_SIZE - 1; i++) {    
+            for (int j = 0; j < ARRAY_SIZE - i - 1; j++) {  
+                if (array[j] > array[j+1]) { 
+                    int temp = array[j];
+                    array[j] = array[j+1];
+                    array[j+1] = temp;
 
-            ClearBackground(RAYWHITE);
+                    BeginDrawing();
+                    ClearBackground(RAYWHITE);
 
-            exitWindow = GuiWindowBox((Rectangle){ 0, 0, screenWidth, screenHeight }, "#196# PORTABLE WINDOW");
-            
-            DrawText(TextFormat("Mouse Position: [ %.0f, %.0f ]", mousePosition.x, mousePosition.y), 10, 40, 10, DARKGRAY);
+                    for (int i = 0; i < ARRAY_SIZE; i++) {
+                        DrawRectangle(i * (GetScreenWidth()/ARRAY_SIZE), GetScreenHeight() - array[i], GetScreenWidth()/ARRAY_SIZE, array[i], BLUE);
+                    }
 
-        EndDrawing();
+                    EndDrawing();
+
+                } 
+            }
+        }
         //----------------------------------------------------------------------------------
     }
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
 
     return 0;
 }
